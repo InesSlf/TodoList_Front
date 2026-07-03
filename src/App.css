@@ -1,0 +1,60 @@
+body{
+    font-family: A !important;
+}
+.conBtn{
+    transition: all 0.2s !important;
+}
+.iconBtn:hover{
+    background-color: #e3dbd8  !important;
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.4);
+
+}
+.cardTD:hover{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.4);
+}
+
+.cardTD{
+    transition: all 0.2s !important;
+
+}
+.AddBtn:hover{
+    background-color: #533833 !important ;
+    transition: all 0.2s !important;
+}
+
+.custom-textfield .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #3e2723;
+}
+
+.custom-textfield .MuiInputLabel-root.Mui-focused {
+  color: #3e2723;
+}
+
+
+/* CUSTOM FONTS  */
+@font-face{
+    font-family: A;
+    src: url("../public/fonts/Oswald-Regular.ttf");
+    font-weight: normal;
+}
+@font-face{
+    font-family: A;
+    src: url("../public/fonts/Oswald-Light.ttf");
+    font-weight: 100;
+
+}
+@font-face{
+    font-family: A;
+    src: url("../public/fonts/Oswald-Bold.ttf");
+    font-weight: bold;
+
+}
+@font-face{
+    font-family: A;
+    src: url("../public/fonts/Oswald-Light.ttf");
+    font-weight: 200;
+
+}
+
