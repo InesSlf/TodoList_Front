@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ToDo from "./ToDo";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { v4 as uuidv4 } from "uuid";
 
@@ -23,8 +23,12 @@ export default function ToDoList() {
   const { toDos, setToDos } = useContext(TodosCntxt);
   const [titleInp, setTitleInp] = useState("");
   const ListTodos = toDos.map((t: Todo) => {
-    return <ToDo key={t.id} todo={t}/>;
+    return <ToDo key={t.id} todo={t} />;
   });
+
+  useEffect(() => {
+    
+  }, [])
 
   function handleAddClick() {
     const newTodo = {
@@ -34,6 +38,7 @@ export default function ToDoList() {
       isCompleted: false,
     };
     setToDos([...toDos, newTodo]);
+    localStorage.setItem("todos", JSON.stringify([...toDos, newTodo]));
     setTitleInp("");
   }
 

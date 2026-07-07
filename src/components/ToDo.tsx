@@ -12,6 +12,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { useContext, useState } from "react";
 type Todo = {
@@ -26,8 +27,11 @@ type TodoProps = {
 };
 
 export default function ToDo({ todo }: TodoProps) {
+  
   const { toDos, setToDos } = useContext(TodosCntxt);
   const [showDelAlert, setShouwDelAlert] = useState(false);
+  const [showUpdateAlert, setShouwUpdateAlert] = useState(false);
+  const [updatedTodo, setUpdatedTodo] = useState({title : todo.title, details: todo.details})
   /* Handlers */
   function handleCheckClick() {
     const updatedTodo = toDos.map((t) => {
@@ -46,8 +50,14 @@ export default function ToDo({ todo }: TodoProps) {
   function handleDelClick() {
     setShouwDelAlert(true);
   }
-  function handleClose() {
+  function handleUpdateClick() {
+    setShouwUpdateAlert(true);
+  }
+  function handleDeleteDialogClose() {
     setShouwDelAlert(false);
+  }
+  function handleUpdateClose() {
+    setShouwUpdateAlert(false);
   }
   function handleDelConfirm() {
     const updatedTodos = toDos.filter((t) => {
@@ -55,31 +65,132 @@ export default function ToDo({ todo }: TodoProps) {
     });
     setToDos(updatedTodos);
   }
+
+  function handleUpdateConfirm() {
+    const updatedTodos = toDos.map((t) => {
+      if (t.id == todo.id) {
+        return {...t, title: updatedTodo.title, details: updatedTodo.details}
+    }else {
+      return t 
+    }
+    })
+    setToDos(updatedTodos);
+    setShouwUpdateAlert(false);
+  }
   return (
     <>
       {/* DELETE MODAL */}
       <Dialog
-        onClose={handleClose}
+        onClose={handleDeleteDialogClose}
         open={showDelAlert}
         slots={{}}
         keepMounted
         aria-describedby="alert-dialog-slide-description"
         role="alertdialog"
       >
-        <DialogTitle>Confirmation de suppression</DialogTitle>
+        <DialogTitle
+          style={{
+            color: "#3e2723",
+          }}
+        >
+          Confirmation de suppression
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            Voulez-vous vraiment supprimer cette tâche ?
+            Êtes-vous sûr de vouloir supprimer cette tâche ?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button
+            autoFocus
+            onClick={handleDeleteDialogClose}
+            style={{
+              color: "#3e2723",
+            }}
+          >
             Annuler
           </Button>
-          <Button onClick={handleDelConfirm}>Supprimer</Button>
+          <Button
+            onClick={handleDelConfirm}
+            style={{
+              color: "#3e2723",
+            }}
+          >
+            Supprimer
+          </Button>
         </DialogActions>
       </Dialog>
       {/* === DELETE MODAL === */}
+
+      {/* UPDATE MODAL */}
+      <Dialog
+        onClose={handleUpdateClose}
+        open={showUpdateAlert}
+        slots={{}}
+        keepMounted
+        aria-describedby="alert-dialog-slide-description"
+        role="alertdialog"
+      >
+        <DialogTitle
+          style={{
+            color: "#3e2723",
+          }}
+        >
+          Confirmation de mise à jour
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="name"
+            name="nom"
+            label="Nom de la tâche"
+            fullWidth
+            variant="standard"
+            style={{color: "#3e2723" }}
+            value={updatedTodo.title}
+            onChange={(e) => {
+              setUpdatedTodo({...updatedTodo, title: e.target.value})
+            }}
+          />
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="name"
+            name="details"
+            label="Détails "
+            fullWidth
+            variant="standard"
+            style={{color: "#3e2723" }}
+            value={updatedTodo.details}
+            onChange={(e) => {
+              setUpdatedTodo({...updatedTodo, details: e.target.value})
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={handleUpdateClose}
+            style={{
+              color: "#3e2723",
+            }}
+          >
+            Annuler
+          </Button>
+          <Button
+            onClick={handleUpdateConfirm}
+            style={{
+              color: "#3e2723",
+            }}
+          >
+            Mettre à jour
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* === UPDATE MODAL === */}
       <Card
         className="cardTD"
         sx={{
@@ -144,6 +255,7 @@ export default function ToDo({ todo }: TodoProps) {
                 <DeleteIcon />
               </IconButton>
               <IconButton
+                onClick={handleUpdateClick}
                 className="iconBtn"
                 aria-label="delete"
                 style={{
