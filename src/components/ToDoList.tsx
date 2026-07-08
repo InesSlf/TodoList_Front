@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ToDo from "./ToDo";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useMemo } from "react";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { v4 as uuidv4 } from "uuid";
 
@@ -25,12 +25,18 @@ export default function ToDoList() {
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
 
   // filteration arrays
-  const completedTodos = toDos.filter((t) => {
-    return t.isCompleted;
-  });
-  const notCompletedTodos = toDos.filter((t) => {
-    return !t.isCompleted;
-  });
+
+  const completedTodos = useMemo(() => {
+    return toDos.filter((t) => {
+      return t.isCompleted;
+    });
+  }, [toDos]);
+
+  const notCompletedTodos = useMemo(() => {
+    return toDos.filter((t) => {
+      return !t.isCompleted;
+    });
+  }, [toDos]);
 
   let todosTobeRendered = toDos;
 
@@ -63,7 +69,7 @@ export default function ToDoList() {
     setTitleInp("");
   }
   function changeDisplayedType(
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     value: string,
   ) {
     setDisplayedTodosType(value);
@@ -72,7 +78,10 @@ export default function ToDoList() {
   return (
     <>
       <Container maxWidth="sm">
-        <Card sx={{ minWidth: 275 }} style={{maxHeight: "90vh", overflow: "scroll"}}>
+        <Card
+          sx={{ minWidth: 275 }}
+          style={{ maxHeight: "90vh", overflow: "scroll" }}
+        >
           <CardContent>
             <Typography
               gutterBottom
@@ -149,7 +158,7 @@ export default function ToDoList() {
                     height: "100%",
                     background: "#3e2723",
                   }}
-                  disabled={titleInp.length == 0 }
+                  disabled={titleInp.length == 0}
                 >
                   Ajouter
                 </Button>
