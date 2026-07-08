@@ -9,6 +9,11 @@ const theme = createTheme({
   typography: {
     fontFamily: "A",
   },
+  palette: {
+    primary:{
+      main: "#3e2723"
+    }
+  }
 });
 const toDosinit = [
   {
@@ -33,7 +38,7 @@ const toDosinit = [
 
 function App() {
   const [toDos, setToDos] = useState(toDosinit);
-  
+
   return (
     <ThemeProvider theme={theme}>
       <div
@@ -45,7 +50,7 @@ function App() {
           padding: "20px",
         }}
       >
-        <TodosCntxt.Provider value={{toDos, setToDos}}>
+        <TodosCntxt.Provider value={{ toDos, setToDos }}>
           <ToDoList />
         </TodosCntxt.Provider>
       </div>

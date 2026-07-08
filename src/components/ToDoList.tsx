@@ -22,13 +22,34 @@ type Todo = {
 export default function ToDoList() {
   const { toDos, setToDos } = useContext(TodosCntxt);
   const [titleInp, setTitleInp] = useState("");
-  const ListTodos = toDos.map((t: Todo) => {
+  const [displayedTodosType, setDisplayedTodosType] = useState("all");
+
+  // filteration arrays
+  const completedTodos = toDos.filter((t) => {
+    return t.isCompleted;
+  });
+  const notCompletedTodos = toDos.filter((t) => {
+    return !t.isCompleted;
+  });
+
+  let todosTobeRendered = toDos;
+
+  if (displayedTodosType === "completed") {
+    todosTobeRendered = completedTodos;
+  } else if (displayedTodosType === "non-completed") {
+    todosTobeRendered = notCompletedTodos;
+  }
+
+  const ListTodos = todosTobeRendered.map((t: Todo) => {
     return <ToDo key={t.id} todo={t} />;
   });
 
   useEffect(() => {
-    
-  }, [])
+    const storageTodos = localStorage.getItem("todos");
+    if (storageTodos) {
+      setToDos(JSON.parse(storageTodos));
+    }
+  }, []);
 
   function handleAddClick() {
     const newTodo = {
@@ -41,11 +62,17 @@ export default function ToDoList() {
     localStorage.setItem("todos", JSON.stringify([...toDos, newTodo]));
     setTitleInp("");
   }
+  function changeDisplayedType(
+    event: React.MouseEvent<HTMLElement>,
+    value: string,
+  ) {
+    setDisplayedTodosType(value);
+  }
 
   return (
     <>
       <Container maxWidth="sm">
-        <Card sx={{ minWidth: 275 }}>
+        <Card sx={{ minWidth: 275 }} style={{maxHeight: "90vh", overflow: "scroll"}}>
           <CardContent>
             <Typography
               gutterBottom
@@ -57,9 +84,9 @@ export default function ToDoList() {
             </Typography>
             <Divider variant="middle" />
             <ToggleButtonGroup
-              /* value={alignment} */
+              value={displayedTodosType}
               exclusive
-              /*   onChange={handleAlignment} */
+              onChange={changeDisplayedType}
               aria-label="text alignment"
               sx={{
                 display: "flex",
@@ -68,13 +95,13 @@ export default function ToDoList() {
                 marginTop: "10px",
               }}
             >
-              <ToggleButton value="left" style={{ color: "#3e2723" }}>
+              <ToggleButton value="all" style={{ color: "#3e2723" }}>
                 Toutes les tâches
               </ToggleButton>
-              <ToggleButton value="center" style={{ color: "#3e2723" }}>
+              <ToggleButton value="non-completed" style={{ color: "#3e2723" }}>
                 En cours
               </ToggleButton>
-              <ToggleButton value="right" style={{ color: "#3e2723" }}>
+              <ToggleButton value="completed" style={{ color: "#3e2723" }}>
                 Terminées
               </ToggleButton>
             </ToggleButtonGroup>
@@ -122,6 +149,7 @@ export default function ToDoList() {
                     height: "100%",
                     background: "#3e2723",
                   }}
+                  disabled={titleInp.length == 0 }
                 >
                   Ajouter
                 </Button>

@@ -27,11 +27,13 @@ type TodoProps = {
 };
 
 export default function ToDo({ todo }: TodoProps) {
-  
   const { toDos, setToDos } = useContext(TodosCntxt);
   const [showDelAlert, setShouwDelAlert] = useState(false);
   const [showUpdateAlert, setShouwUpdateAlert] = useState(false);
-  const [updatedTodo, setUpdatedTodo] = useState({title : todo.title, details: todo.details})
+  const [updatedTodo, setUpdatedTodo] = useState({
+    title: todo.title,
+    details: todo.details,
+  });
   /* Handlers */
   function handleCheckClick() {
     const updatedTodo = toDos.map((t) => {
@@ -46,6 +48,7 @@ export default function ToDo({ todo }: TodoProps) {
     });
 
     setToDos(updatedTodo);
+    localStorage.setItem("todos", JSON.stringify(updatedTodo));
   }
   function handleDelClick() {
     setShouwDelAlert(true);
@@ -64,18 +67,20 @@ export default function ToDo({ todo }: TodoProps) {
       return t.id !== todo.id;
     });
     setToDos(updatedTodos);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
 
   function handleUpdateConfirm() {
     const updatedTodos = toDos.map((t) => {
       if (t.id == todo.id) {
-        return {...t, title: updatedTodo.title, details: updatedTodo.details}
-    }else {
-      return t 
-    }
-    })
+        return { ...t, title: updatedTodo.title, details: updatedTodo.details };
+      } else {
+        return t;
+      }
+    });
     setToDos(updatedTodos);
     setShouwUpdateAlert(false);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
   return (
     <>
@@ -148,10 +153,10 @@ export default function ToDo({ todo }: TodoProps) {
             label="Nom de la tâche"
             fullWidth
             variant="standard"
-            style={{color: "#3e2723" }}
+            style={{ color: "#3e2723" }}
             value={updatedTodo.title}
             onChange={(e) => {
-              setUpdatedTodo({...updatedTodo, title: e.target.value})
+              setUpdatedTodo({ ...updatedTodo, title: e.target.value });
             }}
           />
           <TextField
@@ -163,10 +168,10 @@ export default function ToDo({ todo }: TodoProps) {
             label="Détails "
             fullWidth
             variant="standard"
-            style={{color: "#3e2723" }}
+            style={{ color: "#3e2723" }}
             value={updatedTodo.details}
             onChange={(e) => {
-              setUpdatedTodo({...updatedTodo, details: e.target.value})
+              setUpdatedTodo({ ...updatedTodo, details: e.target.value });
             }}
           />
         </DialogContent>
@@ -205,7 +210,11 @@ export default function ToDo({ todo }: TodoProps) {
             <Grid size={8}>
               <Typography
                 gutterBottom
-                sx={{ color: "text.secondary", textAlign: "left" }}
+                sx={{
+                  color: "text.secondary",
+                  textAlign: "left",
+                  textDecoration: todo.isCompleted ? "line-through" : "none",
+                }}
                 variant="h5"
                 align="center"
               >
