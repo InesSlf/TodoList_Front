@@ -8,6 +8,11 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import ToDo from "./ToDo";
 import { useState, useContext, useEffect, useMemo } from "react";
 import { TodosCntxt } from "../contexts/ToDosContext";
@@ -23,6 +28,9 @@ export default function ToDoList() {
   const { toDos, setToDos } = useContext(TodosCntxt);
   const [titleInp, setTitleInp] = useState("");
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
+  const [showDelAlert, setShouwDelAlert] = useState(false);
+  const [dialTodo, setDialTodo] = useState<Todo | null>(null);
+  const [showUpdateAlert, setShouwUpdateAlert] = useState(false);
 
   // filteration arrays
 
@@ -45,10 +53,6 @@ export default function ToDoList() {
   } else if (displayedTodosType === "non-completed") {
     todosTobeRendered = notCompletedTodos;
   }
-
-  const ListTodos = todosTobeRendered.map((t: Todo) => {
-    return <ToDo key={t.id} todo={t} />;
-  });
 
   useEffect(() => {
     const storageTodos = localStorage.getItem("todos");
@@ -74,9 +78,100 @@ export default function ToDoList() {
   ) {
     setDisplayedTodosType(value);
   }
+  function handleDelConfirm() {
+    if (!dialTodo) return;
+    const updatedTodos = toDos.filter((t) => {
+      return t.id !== dialTodo.id;
+    });
+    setToDos(updatedTodos);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    setShouwDelAlert(false);
+  }
+  function handleDeleteDialogClose() {
+    setShouwDelAlert(false);
+  }
+
+  function showDeleteDialog(todo: Todo) {
+    setDialTodo(todo);
+    setShouwDelAlert(true);
+  }
+  function handleUpdateClose() {
+    setShouwUpdateAlert(false);
+  }
+
+  function showUpdateDialog(todo: Todo) {
+    setDialTodo(todo);
+    setShouwUpdateAlert(true);
+  }
+
+  function handleUpdateConfirm() {
+    const updatedTodos = toDos.map((t) => {
+      if (t.id == dialTodo?.id) {
+        return { ...t, title: dialTodo.title, details: dialTodo.details };
+      } else {
+        return t;
+      }
+    });
+    setToDos(updatedTodos);
+    setShouwUpdateAlert(false);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+  }
+
+  const ListTodos = todosTobeRendered.map((t: Todo) => {
+    return (
+      <ToDo
+        key={t.id}
+        todo={t}
+        showDel={showDeleteDialog}
+        showUpdate={showUpdateDialog}
+      />
+    );
+  });
 
   return (
     <>
+      {/* DELETE MODAL */}
+      <Dialog
+        onClose={handleDeleteDialogClose}
+        open={showDelAlert}
+        slots={{}}
+        keepMounted
+        aria-describedby="alert-dialog-slide-description"
+        role="alertdialog"
+      >
+        <DialogTitle
+          style={{
+            color: "#3e2723",
+          }}
+        >
+          Confirmation de suppression
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Êtes-vous sûr de vouloir supprimer cette tâche ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={handleDeleteDialogClose}
+            style={{
+              color: "#3e2723",
+            }}
+          >
+            Annuler
+          </Button>
+          <Button
+            onClick={handleDelConfirm}
+            style={{
+              color: "#3e2723",
+            }}
+          >
+            Supprimer
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* === DELETE MODAL === */}
       <Container maxWidth="sm">
         <Card
           sx={{ minWidth: 275 }}
@@ -165,6 +260,91 @@ export default function ToDoList() {
               </Grid>
             </Grid>
             {/* === INPUT + ADD BUTTON === */}
+            {/* UPDATE MODAL */}
+            <Dialog
+              onClose={handleUpdateClose}
+              open={showUpdateAlert}
+              slots={{}}
+              keepMounted
+              aria-describedby="alert-dialog-slide-description"
+              role="alertdialog"
+            >
+              <DialogTitle
+                style={{
+                  color: "#3e2723",
+                }}
+              >
+                Confirmation de mise à jour
+              </DialogTitle>
+              <DialogContent>
+                <TextField
+                  autoFocus
+                  required
+                  margin="dense"
+                  id="name"
+                  name="nom"
+                  label="Nom de la tâche"
+                  fullWidth
+                  variant="standard"
+                  style={{ color: "#3e2723" }}
+                  value={dialTodo?.title ?? ""}
+                  /* onChange={(e) => {
+                    setUpdatedTodo({ ...dialTodo, title: e.target.value });
+                  }} */
+                  onChange={(e) => {
+                    if (!dialTodo) return;
+
+                    setDialTodo({
+                      ...dialTodo,
+                      title: e.target.value,
+                    });
+                  }}
+                />
+                <TextField
+                  autoFocus
+                  required
+                  margin="dense"
+                  id="name"
+                  name="details"
+                  label="Détails "
+                  fullWidth
+                  variant="standard"
+                  style={{ color: "#3e2723" }}
+                  value={dialTodo?.details ?? ""}
+                  /* onChange={(e) => {
+                    setUpdatedTodo({ ...dialTodo, details: e.target.value });
+                  }} */
+                  onChange={(e) => {
+                    if (!dialTodo) return;
+
+                    setDialTodo({
+                      ...dialTodo,
+                      details: e.target.value,
+                    });
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  autoFocus
+                  onClick={handleUpdateClose}
+                  style={{
+                    color: "#3e2723",
+                  }}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  onClick={handleUpdateConfirm}
+                  style={{
+                    color: "#3e2723",
+                  }}
+                >
+                  Mettre à jour
+                </Button>
+              </DialogActions>
+            </Dialog>
+            {/* === UPDATE MODAL === */}
           </CardContent>
         </Card>
       </Container>
