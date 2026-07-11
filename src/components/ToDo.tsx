@@ -8,6 +8,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { useContext, /* useState */ } from "react";
+import { ToastCntxt, useToast } from "../contexts/ToastCntxt";
+
 type Todo = {
   id: string;
   title: string;
@@ -23,6 +25,7 @@ type TodoProps = {
 
 export default function ToDo({ todo, showDel, showUpdate }: TodoProps) {
   const { toDos, setToDos } = useContext(TodosCntxt);
+  const { showHideToast } = useToast()
   //const [showDelAlert, setShouwDelAlert] = useState(false);
   /* const [updatedTodo, setUpdatedTodo] = useState({
     title: todo.title,
@@ -43,6 +46,7 @@ export default function ToDo({ todo, showDel, showUpdate }: TodoProps) {
 
     setToDos(updatedTodo);
     localStorage.setItem("todos", JSON.stringify(updatedTodo));
+    showHideToast("Tâche marquée comme terminée !");
   }
   function handleDelClick() {
     showDel(todo);

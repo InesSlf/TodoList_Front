@@ -17,6 +17,7 @@ import ToDo from "./ToDo";
 import { useState, useContext, useEffect, useMemo } from "react";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { v4 as uuidv4 } from "uuid";
+import { ToastCntxt, useToast } from "../contexts/ToastCntxt";
 
 type Todo = {
   id: string;
@@ -26,6 +27,7 @@ type Todo = {
 };
 export default function ToDoList() {
   const { toDos, setToDos } = useContext(TodosCntxt);
+  const {showHideToast} = useToast();
   const [titleInp, setTitleInp] = useState("");
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
   const [showDelAlert, setShouwDelAlert] = useState(false);
@@ -71,6 +73,7 @@ export default function ToDoList() {
     setToDos([...toDos, newTodo]);
     localStorage.setItem("todos", JSON.stringify([...toDos, newTodo]));
     setTitleInp("");
+    showHideToast("Tâche ajoutée avec succès !")
   }
   function changeDisplayedType(
     _: React.MouseEvent<HTMLElement>,
@@ -86,6 +89,7 @@ export default function ToDoList() {
     setToDos(updatedTodos);
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
     setShouwDelAlert(false);
+    showHideToast("Tâche supprimée avec succès !")
   }
   function handleDeleteDialogClose() {
     setShouwDelAlert(false);
@@ -115,6 +119,7 @@ export default function ToDoList() {
     setToDos(updatedTodos);
     setShouwUpdateAlert(false);
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    showHideToast("Tâche mise à jour avec succès !")
   }
 
   const ListTodos = todosTobeRendered.map((t: Todo) => {

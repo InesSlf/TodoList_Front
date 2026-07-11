@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TodosCntxt } from "./contexts/ToDosContext";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { ToastProvider } from "./contexts/ToastCntxt";
 
 const theme = createTheme({
   typography: {
@@ -41,6 +42,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <ToastProvider /* value={{ showHideToast}} */>
       <div
         style={{
           display: "flex",
@@ -54,6 +56,7 @@ function App() {
           <ToDoList />
         </TodosCntxt.Provider>
       </div>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
