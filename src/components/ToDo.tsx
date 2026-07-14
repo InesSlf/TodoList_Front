@@ -8,7 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { useContext, /* useState */ } from "react";
-import { ToastCntxt, useToast } from "../contexts/ToastCntxt";
+import { /* ToastCntxt, */ useToast } from "../contexts/ToastCntxt";
 
 type Todo = {
   id: string;

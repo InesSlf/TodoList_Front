@@ -2,10 +2,13 @@ import { createContext } from "react";
 import { useState, useContext } from "react";
 import MySnackbar from "../components/MySnackBar";
 
-const ToastCntxt = createContext({
-  showHideToast,
-});
+type ToastContextType = {
+  showHideToast: (message: string) => void;
+};
 
+const ToastCntxt = createContext<ToastContextType>({
+  showHideToast: () => {},
+});
 type Props = {
   children: React.ReactNode;
 };
@@ -21,13 +24,14 @@ export const ToastProvider = ({ children }: Props) => {
       setOpen(false);
     }, 2000);
   }
-  return;
-  <>
-    <ToastCntxt.Provider value={{ showHideToast }}>
-      <MySnackbar open={open} message={message} />
-      {children}
-    </ToastCntxt.Provider>
-  </>;
+  return (
+    <>
+      <ToastCntxt.Provider value={{ showHideToast }}>
+        <MySnackbar open={open} message={message} />
+        {children}
+      </ToastCntxt.Provider>
+    </>
+  );
 };
 
 export const useToast = () => {

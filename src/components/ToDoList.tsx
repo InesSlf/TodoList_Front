@@ -14,10 +14,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import ToDo from "./ToDo";
-import { useState, useContext, useEffect, useMemo } from "react";
+import { useState, useContext, useEffect, useMemo, useReducer } from "react";
 import { TodosCntxt } from "../contexts/ToDosContext";
-import { v4 as uuidv4 } from "uuid";
-import { ToastCntxt, useToast } from "../contexts/ToastCntxt";
+/* import { v4 as uuidv4 } from "uuid"; */
+import { /* ToastCntxt, */ useToast } from "../contexts/ToastCntxt";
+import todosReducer from "../reducers/todosReducer";
 
 type Todo = {
   id: string;
@@ -26,13 +27,14 @@ type Todo = {
   isCompleted: boolean;
 };
 export default function ToDoList() {
-  const { toDos, setToDos } = useContext(TodosCntxt);
-  const {showHideToast} = useToast();
+  const { toDos2, setToDos } = useContext(TodosCntxt);
+  const { showHideToast } = useToast();
   const [titleInp, setTitleInp] = useState("");
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
   const [showDelAlert, setShouwDelAlert] = useState(false);
   const [dialTodo, setDialTodo] = useState<Todo | null>(null);
   const [showUpdateAlert, setShouwUpdateAlert] = useState(false);
+  const [toDos, dispatch] = useReducer(todosReducer, []);
 
   // filteration arrays
 
@@ -57,24 +59,24 @@ export default function ToDoList() {
   }
 
   useEffect(() => {
-    const storageTodos = localStorage.getItem("todos");
-    if (storageTodos) {
-      setToDos(JSON.parse(storageTodos));
-    }
+    dispatch({
+      type: "get"
+    })
   }, []);
 
+  //handlers
+
   function handleAddClick() {
-    const newTodo = {
-      id: uuidv4(),
-      title: titleInp,
-      details: "",
-      isCompleted: false,
-    };
-    setToDos([...toDos, newTodo]);
-    localStorage.setItem("todos", JSON.stringify([...toDos, newTodo]));
+    dispatch({
+      type: "add",
+      payload: {
+        title: titleInp,
+      },
+    });
     setTitleInp("");
-    showHideToast("Tâche ajoutée avec succès !")
+    showHideToast("Tâche ajoutée avec succès !");
   }
+
   function changeDisplayedType(
     _: React.MouseEvent<HTMLElement>,
     value: string,
@@ -83,13 +85,14 @@ export default function ToDoList() {
   }
   function handleDelConfirm() {
     if (!dialTodo) return;
-    const updatedTodos = toDos.filter((t) => {
-      return t.id !== dialTodo.id;
+    dispatch({
+      type: "delete",
+      payload: {
+        id: dialTodo.id,
+      },
     });
-    setToDos(updatedTodos);
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
     setShouwDelAlert(false);
-    showHideToast("Tâche supprimée avec succès !")
+    showHideToast("Tâche supprimée avec succès !");
   }
   function handleDeleteDialogClose() {
     setShouwDelAlert(false);
@@ -109,17 +112,17 @@ export default function ToDoList() {
   }
 
   function handleUpdateConfirm() {
-    const updatedTodos = toDos.map((t) => {
-      if (t.id == dialTodo?.id) {
-        return { ...t, title: dialTodo.title, details: dialTodo.details };
-      } else {
-        return t;
-      }
+    if (!dialTodo) return;
+    dispatch({
+      type: "update",
+      payload: {
+        id: dialTodo.id,
+        title: dialTodo.title,
+        details: dialTodo.details,
+      },
     });
-    setToDos(updatedTodos);
     setShouwUpdateAlert(false);
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
-    showHideToast("Tâche mise à jour avec succès !")
+    showHideToast("Tâche mise à jour avec succès !");
   }
 
   const ListTodos = todosTobeRendered.map((t: Todo) => {
