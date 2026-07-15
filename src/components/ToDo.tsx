@@ -8,7 +8,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { TodosCntxt } from "../contexts/ToDosContext";
 import { useContext, /* useState */ } from "react";
-import { /* ToastCntxt, */ useToast } from "../contexts/ToastCntxt";
+//import { /* ToastCntxt, */ useToast } from "../contexts/ToastCntxt";
+import { useToast } from "../contexts/useToast";
 
 type Todo = {
   id: string;
@@ -24,7 +25,8 @@ type TodoProps = {
 };
 
 export default function ToDo({ todo, showDel, showUpdate }: TodoProps) {
-  const { toDos, setToDos } = useContext(TodosCntxt);
+  //const { toDos, setToDos } = useContext(TodosCntxt);
+  const { /* toDos, */ dispatch } = useContext(TodosCntxt);
   const { showHideToast } = useToast()
   //const [showDelAlert, setShouwDelAlert] = useState(false);
   /* const [updatedTodo, setUpdatedTodo] = useState({
@@ -33,19 +35,12 @@ export default function ToDo({ todo, showDel, showUpdate }: TodoProps) {
   }); */ 
   /* Handlers */
   function handleCheckClick() {
-    const updatedTodo = toDos.map((t) => {
-      if (t.id === todo.id) {
-        return {
-          ...t,
-          isCompleted: !t.isCompleted,
-        };
+    dispatch({
+      type: "completed",
+      payload: {
+        id: todo.id,
       }
-
-      return t;
-    });
-
-    setToDos(updatedTodo);
-    localStorage.setItem("todos", JSON.stringify(updatedTodo));
+    })
     showHideToast("Tâche marquée comme terminée !");
   }
   function handleDelClick() {

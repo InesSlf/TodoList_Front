@@ -5,7 +5,7 @@ type Todo = {
   details: string;
   isCompleted: boolean;
 };
-type Action =
+export type Action =
     | {
           type: "add";
           payload: {
@@ -28,7 +28,13 @@ type Action =
         }
     | {
       type: "get";
-    };
+    }
+    | {
+      type: "completed",
+      payload: {
+        id: string;
+      };
+    }
 
       
 function assertNever(x: never): never {
@@ -75,6 +81,20 @@ export default function todosReducer(state: Todo[], action: Action) {
             }
             return state
         }
+        case "completed" :{
+            const updatedTodo = state.map((t) => {
+            if (t.id === action.payload.id) {
+            return {
+                  ...t,
+                  isCompleted: !t.isCompleted,
+            };
+        }
+
+              return t;
+            });
+            localStorage.setItem("todos", JSON.stringify(updatedTodo));
+            return updatedTodo;
+          }
         default: {
             return assertNever(action);
         }

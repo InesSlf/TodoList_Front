@@ -14,11 +14,12 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import ToDo from "./ToDo";
-import { useState, useContext, useEffect, useMemo, useReducer } from "react";
+import { useState, useContext, useEffect, useMemo/* , useReducer */ } from "react";
 import { TodosCntxt } from "../contexts/ToDosContext";
 /* import { v4 as uuidv4 } from "uuid"; */
-import { /* ToastCntxt, */ useToast } from "../contexts/ToastCntxt";
-import todosReducer from "../reducers/todosReducer";
+//import { /* ToastCntxt, */ useToast } from "../contexts/ToastCntxt";
+//import todosReducer from "../reducers/todosReducer";
+import { useToast } from "../contexts/useToast";
 
 type Todo = {
   id: string;
@@ -27,14 +28,15 @@ type Todo = {
   isCompleted: boolean;
 };
 export default function ToDoList() {
-  const { toDos2, setToDos } = useContext(TodosCntxt);
+  //const { toDos2, setToDos } = useContext(TodosCntxt);
+  const {toDos, dispatch} = useContext(TodosCntxt);
   const { showHideToast } = useToast();
   const [titleInp, setTitleInp] = useState("");
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
   const [showDelAlert, setShouwDelAlert] = useState(false);
   const [dialTodo, setDialTodo] = useState<Todo | null>(null);
   const [showUpdateAlert, setShouwUpdateAlert] = useState(false);
-  const [toDos, dispatch] = useReducer(todosReducer, []);
+  //const [toDos, dispatch] = useReducer(todosReducer, []);
 
   // filteration arrays
 
@@ -60,8 +62,8 @@ export default function ToDoList() {
 
   useEffect(() => {
     dispatch({
-      type: "get"
-    })
+      type: "get",
+    });
   }, []);
 
   //handlers

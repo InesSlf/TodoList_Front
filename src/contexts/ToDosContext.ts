@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { Action } from "../reducers/todosReducer";
 
 type Todo = {
   id: string;
@@ -6,12 +7,13 @@ type Todo = {
   details: string;
   isCompleted: boolean;
 };
-type TodosContextType = {
+
+export type TodosContextType = {
   toDos: Todo[];
-  setToDos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  dispatch: React.Dispatch<Action>;
 };
 
 export const TodosCntxt = createContext<TodosContextType>({
   toDos: [],
-  setToDos: () => {},
+  dispatch: () => {},
 });
